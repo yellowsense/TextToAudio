@@ -13,6 +13,7 @@ USERNAME = 'ysadmin'
 PASSWORD = 'yellowsense@1234'
 connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}'
 
+
 try:
     with pyodbc.connect(connectionString) as conn:
         app.logger.info("Connected to the database.")
