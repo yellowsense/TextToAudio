@@ -21,6 +21,7 @@ except pyodbc.Error as e:
     app.logger.error("Error connecting to the database: %s", e)
     raise
 
+
 @app.route('/synthesize', methods=['GET'])
 def synthesize_and_download():
     try:
