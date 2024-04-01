@@ -47,7 +47,7 @@ def synthesize_and_download():
 
         # Generating greeting text
         location = apartment if apartment else area
-        greeting_text = f"नमस्ते {serviceprovider_name},\n येलोसेंस में आपका स्वागत है! किसी {location} से कॉल किया है और आपकी {servicetype} सेवा के लिए बुकिंग की है।\n"
+        greeting_text = f"नमस्ते येलोसेंस में आपका स्वागत है! किसी {location} से कॉल किया है और आपकी {servicetype} सेवा के लिए बुकिंग की है।\n"
         if starttime:
             greeting_text += f"{starttime} पर काम शुरू करने के लिए"
         greeting_text += f" {startdate} को।\n"
