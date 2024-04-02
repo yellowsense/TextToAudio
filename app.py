@@ -28,6 +28,7 @@ def synthesize_and_download():
     try:
         # Print out the request data received from Exotel
         print("Request Data:", request.args)
+        logging.info("Request Data: %s", request.args)
         # Assuming you have the database connection and cursor available
         cursor.execute('''
             SELECT TOP 1 servicetype, starttime, apartment, area, startdate
