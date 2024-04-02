@@ -28,7 +28,7 @@ def synthesize_and_download():
     try:
         # Assuming you have the database connection and cursor available
         cursor.execute('''
-            SELECT TOP 1 servicetype, starttime, apartment, area, startdate, customernumber, serviceprovider_number, serviceprovider_name
+            SELECT TOP 1 servicetype, starttime, apartment, area, startdate
             FROM dynamic_greeting
             ORDER BY id DESC
         ''')
@@ -43,7 +43,6 @@ def synthesize_and_download():
         apartment = latest_data.apartment
         area = latest_data.area
         startdate = latest_data.startdate
-        serviceprovider_name = latest_data.serviceprovider_name
 
         # Generating greeting text
         location = apartment if apartment else area
