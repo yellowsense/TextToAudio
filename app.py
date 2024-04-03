@@ -112,7 +112,7 @@ except pyodbc.Error as e:
 #         logging.error("An error occurred during text-to-speech synthesis: %s", e)
 #         return None
 
-@app.route('/synthesize', methods=['GET'])
+@app.route('/greeting', methods=['GET'])
 def synthesize_and_download():
     try:
         cursor.execute('''
