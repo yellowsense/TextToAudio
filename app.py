@@ -118,7 +118,7 @@ def synthesize_and_download():
         cursor.execute('''
             SELECT TOP 1 servicetype, starttime, apartment, area, startdate
             FROM dynamic_greeting
-            ORDER BY id DESC
+            ORDER BY created_at DESC
         ''')
         latest_data = cursor.fetchone()
 
