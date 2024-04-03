@@ -3,6 +3,7 @@ import logging
 import pyodbc
 import azure.cognitiveservices.speech as speechsdk
 import time
+import uuid
 
 app = Flask(__name__)
 
@@ -163,8 +164,12 @@ def text_to_speech(text, speech_key, service_region, voice_name):
     try:
         speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
         speech_config.set_speech_synthesis_output_format(speechsdk.SpeechSynthesisOutputFormat.Riff8Khz16BitMonoPcm)
+        # Generate a unique identifier for the audio file name
+        unique_id = str(uuid.uuid4())[:8]  # Using the first 8 characters of UUID
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        audio_file_name = f"greetingaudio_{timestamp}.wav"
+        audio_file_name = f"greetingaudio_{timestamp}_{unique_id}.wav"  
+        # timestamp = time.strftime("%Y%m%d-%H%M%S")
+        # audio_file_name = f"greetingaudio_{timestamp}.wav"
         audio_config = speechsdk.audio.AudioOutputConfig(filename=audio_file_name)
         speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
         logging.info("Speech synthesizer initialized successfully.")
