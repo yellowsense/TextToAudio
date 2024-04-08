@@ -113,7 +113,7 @@ except pyodbc.Error as e:
 #         logging.error("An error occurred during text-to-speech synthesis: %s", e)
 #         return None
 
-@app.route('/greetings', methods=['GET'])
+@app.route('/dynamicgreeting', methods=['GET'])
 def synthesize_and_download():
     try:
         cursor.execute('''
@@ -163,8 +163,8 @@ def synthesize_and_download():
 def text_to_speech(text, speech_key, service_region, voice_name):
     try:
         speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
-        speech_config.set_speech_synthesis_output_format(speechsdk.SpeechSynthesisOutputFormat.Riff8Khz8BitMonoMULaw)
-        # Riff8Khz16BitMonoPcm
+        speech_config.set_speech_synthesis_output_format(speechsdk.SpeechSynthesisOutputFormat.Riff8Khz16BitMonoPcm)
+        #Riff8Khz8BitMonoMULaw
         # Generate a unique identifier for the audio file name
         unique_id = str(uuid.uuid4())[:8]  # Using the first 8 characters of UUID
         timestamp = time.strftime("%Y%m%d-%H%M%S")
