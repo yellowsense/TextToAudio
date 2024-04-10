@@ -116,11 +116,11 @@ except pyodbc.Error as e:
 @app.route('/dynamicgreeting', methods=['GET'])
 def synthesize_and_download():
     try:
-        cursor.execute('''
+        cursor.execute("""
             SELECT TOP 1 servicetype, starttime, apartment, area, startdate
             FROM dynamic_greeting
             ORDER BY id DESC
-        ''')
+        """)
         latest_data = cursor.fetchone()
 
         if not latest_data:
