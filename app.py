@@ -8,8 +8,8 @@ import uuid
 app = Flask(__name__)
 
 # Database connection setup
-SERVER = 'maidsqlppserver.database.windows.net'
-DATABASE = 'miadsqlpp'
+SERVER = 'serviceproviderdatasqlsever.database.windows.net'
+DATABASE = 'Yellowsensesqldatabase'
 USERNAME = 'ysadmin'
 PASSWORD = 'yellowsense@1234'
 connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}'
