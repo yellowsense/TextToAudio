@@ -7,6 +7,7 @@
 
 # app = Flask(__name__)
 
+
 # # Database connection setup
 # SERVER = 'serviceproviderdatasqlsever.database.windows.net'
 # DATABASE = 'Yellowsensesqldatabase'
