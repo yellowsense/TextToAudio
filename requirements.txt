@@ -1,5 +1,6 @@
 flask
-pyodbc==5.0.1
+pyodbc
 azure-cognitiveservices-speech==1.36.0
 azure-storage-blob
 pyaudio==0.2.14
+
