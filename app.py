@@ -198,179 +198,179 @@ def text_to_speech(text, speech_key, service_region, voice_name):
         logging.error("An error occurred during text-to-speech synthesis: %s", e)
         return None
 
-# Azure Blob Storage Configuration
-connect_str = "DefaultEndpointsProtocol=https;AccountName=twittermelody;AccountKey=/+IBhdozqgO94QCBlVCv7fJ3AIm7X0cVfLxg7t50Xf980pExPYu+l+fpbonI5VEDhEqTtuSDGcZP+ASt5F4gmw==;EndpointSuffix=core.windows.net"  # Replace with your Azure Storage connection string
-blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-container_name = "melody-audiofiles"
-# Function to start recording audio
-def start_recording(output_file, sample_rate=44100, channels=2, chunk=1024, format=pyaudio.paInt16):
-    global is_recording, audio_frames, audio_stream, audio_instance
+# # Azure Blob Storage Configuration
+# connect_str = "DefaultEndpointsProtocol=https;AccountName=twittermelody;AccountKey=/+IBhdozqgO94QCBlVCv7fJ3AIm7X0cVfLxg7t50Xf980pExPYu+l+fpbonI5VEDhEqTtuSDGcZP+ASt5F4gmw==;EndpointSuffix=core.windows.net"  # Replace with your Azure Storage connection string
+# blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+# container_name = "melody-audiofiles"
+# # Function to start recording audio
+# def start_recording(output_file, sample_rate=44100, channels=2, chunk=1024, format=pyaudio.paInt16):
+#     global is_recording, audio_frames, audio_stream, audio_instance
     
-    is_recording = True
-    audio_frames = []
+#     is_recording = True
+#     audio_frames = []
 
-    # Initialize PyAudio
-    audio_instance = pyaudio.PyAudio()
+#     # Initialize PyAudio
+#     audio_instance = pyaudio.PyAudio()
 
-    # Define parameters for recording
-    audio_stream = audio_instance.open(format=format,
-                                       channels=channels,
-                                       rate=sample_rate,
-                                       input=True,
-                                       frames_per_buffer=chunk)
+#     # Define parameters for recording
+#     audio_stream = audio_instance.open(format=format,
+#                                        channels=channels,
+#                                        rate=sample_rate,
+#                                        input=True,
+#                                        frames_per_buffer=chunk)
 
-    print("Recording started...")
-    while is_recording:
-        data = audio_stream.read(chunk)
-        audio_frames.append(data)
+#     print("Recording started...")
+#     while is_recording:
+#         data = audio_stream.read(chunk)
+#         audio_frames.append(data)
     
-    # Stop and close the stream
-    audio_stream.stop_stream()
-    audio_stream.close()
-    audio_instance.terminate()
+#     # Stop and close the stream
+#     audio_stream.stop_stream()
+#     audio_stream.close()
+#     audio_instance.terminate()
 
-    # Save the recorded audio to a WAV file
-    with wave.open(output_file, 'wb') as wf:
-        wf.setnchannels(channels)
-        wf.setsampwidth(audio_instance.get_sample_size(format))
-        wf.setframerate(sample_rate)
-        wf.writeframes(b''.join(audio_frames))
+#     # Save the recorded audio to a WAV file
+#     with wave.open(output_file, 'wb') as wf:
+#         wf.setnchannels(channels)
+#         wf.setsampwidth(audio_instance.get_sample_size(format))
+#         wf.setframerate(sample_rate)
+#         wf.writeframes(b''.join(audio_frames))
 
-    print(f"Audio saved to {output_file}")
+#     print(f"Audio saved to {output_file}")
 
-    # Upload to Azure Blob Storage
-    upload_to_azure_blob(output_file)
+#     # Upload to Azure Blob Storage
+#     upload_to_azure_blob(output_file)
 
-# Function to upload file to Azure Blob Storage
-def upload_to_azure_blob(file_path):
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=os.path.basename(file_path))
+# # Function to upload file to Azure Blob Storage
+# def upload_to_azure_blob(file_path):
+#     blob_client = blob_service_client.get_blob_client(container=container_name, blob=os.path.basename(file_path))
 
-    # Check if the file already exists in the blob
-    if blob_client.exists():
-        print(f"File {os.path.basename(file_path)} already exists in Azure Blob Storage")
-        return False
+#     # Check if the file already exists in the blob
+#     if blob_client.exists():
+#         print(f"File {os.path.basename(file_path)} already exists in Azure Blob Storage")
+#         return False
 
-    with open(file_path, "rb") as data:
-        blob_client.upload_blob(data)
-    print(f"Uploaded {file_path} to Azure Blob Storage")
-    return True
+#     with open(file_path, "rb") as data:
+#         blob_client.upload_blob(data)
+#     print(f"Uploaded {file_path} to Azure Blob Storage")
+#     return True
 
-# API endpoint to start recording
-@app.route('/start_recording_context', methods=['POST'])
-def start_recording_endpoint():
-    data = request.json
-    if not data or 'username' not in data:
-        return jsonify({"error": "Invalid JSON body"}), 400
+# # API endpoint to start recording
+# @app.route('/start_recording_context', methods=['POST'])
+# def start_recording_endpoint():
+#     data = request.json
+#     if not data or 'username' not in data:
+#         return jsonify({"error": "Invalid JSON body"}), 400
     
-    username = data['username']
-    if ' ' in username:
-        return jsonify({"error": "Username should not contain spaces. Please provide another name."}), 400
-    output_file = f"VoiceTalentVerbalStatement_{username}.wav"
+#     username = data['username']
+#     if ' ' in username:
+#         return jsonify({"error": "Username should not contain spaces. Please provide another name."}), 400
+#     output_file = f"VoiceTalentVerbalStatement_{username}.wav"
 
-    # Check if the file already exists in the blob storage
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=os.path.basename(output_file))
-    if blob_client.exists():
-        return jsonify({"error": "Username already exists, please provide another name"}), 400
+#     # Check if the file already exists in the blob storage
+#     blob_client = blob_service_client.get_blob_client(container=container_name, blob=os.path.basename(output_file))
+#     if blob_client.exists():
+#         return jsonify({"error": "Username already exists, please provide another name"}), 400
 
-    # Start recording in a new thread
-    threading.Thread(target=start_recording, args=(output_file,)).start()
+#     # Start recording in a new thread
+#     threading.Thread(target=start_recording, args=(output_file,)).start()
     
-    return jsonify({"message": "Recording started"}), 200
+#     return jsonify({"message": "Recording started"}), 200
 
-# API endpoint to stop recording
-@app.route('/stop_recording_context', methods=['POST'])
-def stop_recording_endpoint():
-    global is_recording
-    is_recording = False
+# # API endpoint to stop recording
+# @app.route('/stop_recording_context', methods=['POST'])
+# def stop_recording_endpoint():
+#     global is_recording
+#     is_recording = False
     
-    return jsonify({"message": "Recording stopped"}), 200
+#     return jsonify({"message": "Recording stopped"}), 200
 
 
-# Function to start recording audio
-def start_recording_sample_voice(output_file, sample_rate=44100, channels=2, chunk=1024, format=pyaudio.paInt16):
-    global is_recording, audio_frames, audio_stream, audio_instance
+# # Function to start recording audio
+# def start_recording_sample_voice(output_file, sample_rate=44100, channels=2, chunk=1024, format=pyaudio.paInt16):
+#     global is_recording, audio_frames, audio_stream, audio_instance
     
-    is_recording = True
-    audio_frames = []
+#     is_recording = True
+#     audio_frames = []
 
-    # Initialize PyAudio
-    audio_instance = pyaudio.PyAudio()
+#     # Initialize PyAudio
+#     audio_instance = pyaudio.PyAudio()
 
-    # Define parameters for recording
-    audio_stream = audio_instance.open(format=format,
-                                       channels=channels,
-                                       rate=sample_rate,
-                                       input=True,
-                                       frames_per_buffer=chunk)
+#     # Define parameters for recording
+#     audio_stream = audio_instance.open(format=format,
+#                                        channels=channels,
+#                                        rate=sample_rate,
+#                                        input=True,
+#                                        frames_per_buffer=chunk)
 
-    print("Recording started...")
-    while is_recording:
-        data = audio_stream.read(chunk)
-        audio_frames.append(data)
+#     print("Recording started...")
+#     while is_recording:
+#         data = audio_stream.read(chunk)
+#         audio_frames.append(data)
     
-    # Stop and close the stream
-    audio_stream.stop_stream()
-    audio_stream.close()
-    audio_instance.terminate()
+#     # Stop and close the stream
+#     audio_stream.stop_stream()
+#     audio_stream.close()
+#     audio_instance.terminate()
 
-    # Save the recorded audio to a WAV file
-    with wave.open(output_file, 'wb') as wf:
-        wf.setnchannels(channels)
-        wf.setsampwidth(audio_instance.get_sample_size(format))
-        wf.setframerate(sample_rate)
-        wf.writeframes(b''.join(audio_frames))
+#     # Save the recorded audio to a WAV file
+#     with wave.open(output_file, 'wb') as wf:
+#         wf.setnchannels(channels)
+#         wf.setsampwidth(audio_instance.get_sample_size(format))
+#         wf.setframerate(sample_rate)
+#         wf.writeframes(b''.join(audio_frames))
 
-    print(f"Audio saved to {output_file}")
+#     print(f"Audio saved to {output_file}")
 
-    # Upload to Azure Blob Storage
-    upload_to_azure_blob_samplevoice(output_file)
-# Function to upload file to Azure Blob Storage
-def upload_to_azure_blob_samplevoice(file_path):
-    file_name = os.path.basename(file_path)
-    username = file_name.split('_')[2].split('.')[0]
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=f"{username}/{file_name}")
+#     # Upload to Azure Blob Storage
+#     upload_to_azure_blob_samplevoice(output_file)
+# # Function to upload file to Azure Blob Storage
+# def upload_to_azure_blob_samplevoice(file_path):
+#     file_name = os.path.basename(file_path)
+#     username = file_name.split('_')[2].split('.')[0]
+#     blob_client = blob_service_client.get_blob_client(container=container_name, blob=f"{username}/{file_name}")
 
-    # Check if the file already exists in the blob
-    if blob_client.exists():
-        print(f"File {file_name} already exists in Azure Blob Storage")
-        return False
+#     # Check if the file already exists in the blob
+#     if blob_client.exists():
+#         print(f"File {file_name} already exists in Azure Blob Storage")
+#         return False
 
-    with open(file_path, "rb") as data:
-        blob_client.upload_blob(data)
-    print(f"Uploaded {file_path} to Azure Blob Storage in folder {username}")
-    return True
+#     with open(file_path, "rb") as data:
+#         blob_client.upload_blob(data)
+#     print(f"Uploaded {file_path} to Azure Blob Storage in folder {username}")
+#     return True
 
-# API endpoint to start recording
-@app.route('/start_recording_samplevoice', methods=['POST'])
-def start_recording_endpoint_samplevoice():
-    data = request.json
-    if not data or 'username' not in data:
-        return jsonify({"error": "Invalid JSON body"}), 400
+# # API endpoint to start recording
+# @app.route('/start_recording_samplevoice', methods=['POST'])
+# def start_recording_endpoint_samplevoice():
+#     data = request.json
+#     if not data or 'username' not in data:
+#         return jsonify({"error": "Invalid JSON body"}), 400
     
-    username = data['username']
+#     username = data['username']
     
-    if ' ' in username:
-        return jsonify({"error": "Username should not contain spaces. Please provide another name."}), 400
+#     if ' ' in username:
+#         return jsonify({"error": "Username should not contain spaces. Please provide another name."}), 400
 
-    output_file = f"sample_voice_{username}.wav"
+#     output_file = f"sample_voice_{username}.wav"
 
-    # Check if the file already exists in the blob storage
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=f"{username}/{output_file}")
-    if blob_client.exists():
-        return jsonify({"error": "Username already exists, please provide another name"}), 400
+#     # Check if the file already exists in the blob storage
+#     blob_client = blob_service_client.get_blob_client(container=container_name, blob=f"{username}/{output_file}")
+#     if blob_client.exists():
+#         return jsonify({"error": "Username already exists, please provide another name"}), 400
 
-    # Start recording in a new thread
-    threading.Thread(target=start_recording_sample_voice, args=(output_file,)).start()
+#     # Start recording in a new thread
+#     threading.Thread(target=start_recording_sample_voice, args=(output_file,)).start()
     
-    return jsonify({"message": "Recording started"}), 200
+#     return jsonify({"message": "Recording started"}), 200
 
-# API endpoint to stop recording
-@app.route('/stop_recording_samplevoice', methods=['POST'])
-def stop_recording_samplevoice():
-    global is_recording
-    is_recording = False
+# # API endpoint to stop recording
+# @app.route('/stop_recording_samplevoice', methods=['POST'])
+# def stop_recording_samplevoice():
+#     global is_recording
+#     is_recording = False
     
-    return jsonify({"message": "Recording stopped"}), 200
+#     return jsonify({"message": "Recording stopped"}), 200
 
 
 if __name__ == "__main__":
